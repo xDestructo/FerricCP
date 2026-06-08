@@ -1,0 +1,9 @@
+[package]
+name = "ferric_cp"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.103"
+tree-sitter = "0.26.10"
+tree-sitter-cpp = "0.23.4"
