@@ -1,6 +1,6 @@
 id: ban-goto
 language: cpp
-severity: error
+severity: critical
 message: "Use of 'goto' statement is banned."
 tip: "Refactor this control flow using loops or early returns."
 query: |

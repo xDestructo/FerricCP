@@ -2,6 +2,9 @@ use anyhow::{Context, Result};
 use std::fs;
 use tree_sitter::{Node, Parser};
 use tree_sitter_cpp;
+                             
+pub mod config;
+pub mod analyzer;
 
 fn main() -> Result<()> {
     println!("Init");
@@ -10,6 +13,10 @@ fn main() -> Result<()> {
     let cpp = tree_sitter_cpp::LANGUAGE.into();
     parser.set_language(&cpp)
         .context("Failed to load tree-sitter C++ grammar")?;
+
+    let rule_path = "rules/cpp";
+    let rules_arr = config::load_rules(rule_path)?;
+    println!("Loaded {} rules from {}.", rules_arr.len(), rule_path);
 
     let path = "test.cpp";
     let source_code = fs::read_to_string(path)
@@ -23,29 +30,7 @@ fn main() -> Result<()> {
 
     let root_node = tree.root_node();
     
-    check_for_goto(root_node, source_code.as_bytes());
+    analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &cpp);
 
     Ok(())
-}
-
-fn check_for_goto(node: Node, source: &[u8]) {
-    if node.kind() == "goto_statement" {
-        let start = node.start_position();
-        
-        let line = start.row + 1;
-        let column = start.column + 1;
-
-        let snippet = std::str::from_utf8(&source[node.start_byte()..node.end_byte()])
-            .unwrap_or("<unreadable source>");
-
-        println!("WARNING: Goto detected");
-        println!("Rule: ban-goto");
-        println!("Location: Line {}, Column {}", line, column);
-        println!("Code: `{}`\n", snippet);
-    }
-
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        check_for_goto(child, source);
-    }
 }
