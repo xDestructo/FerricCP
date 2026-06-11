@@ -1,12 +1,17 @@
 #include <iostream>
+#include <vector>
+#include <cmath>
 
 int main() {
-    int n;
-    std::cin >> n;
+    std::vector<std::string> grid = {"hello", "world"};
+    
+    for(auto row : grid) std::cout << row << std::endl; 
+    
+    long ans = pow(2, 40);
     
     loop_start:
-    n--;
-    if(n > 0) {
+    ans--;
+    if (ans > 0) {
         goto loop_start; 
     }
     

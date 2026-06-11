@@ -1,4 +1,4 @@
-id: ban-goto
+id: ban_goto
 language: cpp
 severity: critical
 message: "Use of 'goto' statement is banned."

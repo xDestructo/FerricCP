@@ -1,0 +1,8 @@
+id: ban_endl
+language: cpp
+severity: warning
+message: "endl forces an expensive buffer flush."
+tip: "Replace with '\\n' to prevent TLE on large outputs."
+query: |
+  ((identifier) @violation
+   (#eq? @violation "endl"))

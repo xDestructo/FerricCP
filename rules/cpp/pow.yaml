@@ -1,0 +1,10 @@
+id: pow
+language: cpp
+severity: error
+message: "Using 'pow()' for integers risks floating-point precision loss."
+tip: "Write a custom binary exponentiation function for exact integer math."
+query: |
+  (call_expression
+    function: (identifier) @func (#eq? @func "pow")
+  ) @violation
+  
