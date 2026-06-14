@@ -1,28 +1,43 @@
 use anyhow::{Context, Result};
 use std::fs;
-use tree_sitter::{Node, Parser};
+use tree_sitter::{Parser};
 use tree_sitter_cpp;
-                             
+use clap::Parser as ClapParser; 
+
 pub mod config;
 pub mod analyzer;
 
+/// FerricCP: A C++ static analyzer for Competitive Programming, built in Rust.
+#[derive(ClapParser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// The C++ source file to analyze
+    #[arg(short, long)]
+    file: String,
+
+    /// Path to the rules directory
+    #[arg(short, long, default_value = "rules/cpp")]
+    rules: String,
+}
+
 fn main() -> Result<()> {
     println!("Init");
+
+    let args = Args::parse();
+
 
     let mut parser = Parser::new();
     let cpp = tree_sitter_cpp::LANGUAGE.into();
     parser.set_language(&cpp)
         .context("Failed to load tree-sitter C++ grammar")?;
 
-    let rule_path = "rules/cpp";
-    let rules_arr = config::load_rules(rule_path)?;
-    println!("Loaded {} rules from {}.", rules_arr.len(), rule_path);
+    let rules_arr = config::load_rules(&args.rules)?;
+    println!("Loaded {} rules from {}.", rules_arr.len(), &args.rules);
 
-    let path = "test.cpp";
-    let source_code = fs::read_to_string(path)
-        .with_context(|| format!("Failed to read {}", path))?;
+    let source_code = fs::read_to_string(&args.file)
+        .with_context(|| format!("Failed to read {}", &args.file))?;
 
-    println!("Read {} ({} bytes).", path, source_code.len());
+    println!("Read {} ({} bytes).", &args.file, source_code.len());
 
     let tree = parser
         .parse(&source_code, None)
