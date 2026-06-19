@@ -1,0 +1,11 @@
+id: mutable-default-arg
+language: python
+severity: error
+message: "Bug: Mutable default arguments share state across function calls."
+tip: "Use 'None' as the default and initialize the list inside the function."
+query: |
+  (parameters
+    (default_parameter
+      value: [(list) (dictionary)] @violation
+    )
+  )
