@@ -1,25 +1,16 @@
 use crate::config::RuleConfig;
+use crate::diagnostics::Diagnostic;
 use tree_sitter::{Language, Node, Query, QueryCursor, StreamingIterator};
-
-struct NodeDetails {
-    line: usize,
-    column: usize,
-    id: String,
-    message: String,
-    severity: String,
-    tip: Option<String>,
-    snippet: String,
-}
 
 pub fn analyze(
     root_node: Node,
     source_code: &[u8],
     rules: &[RuleConfig],
     language: &Language,
-) 
+) -> Vec<Diagnostic>
 {
     let mut cursor = QueryCursor::new();
-    let mut details_arr: Vec<NodeDetails> = Vec::new();
+    let mut details_arr: Vec<Diagnostic> = Vec::new();
 
     for rule in rules {
         let query = match Query::new(language, &rule.query) {
@@ -47,7 +38,7 @@ pub fn analyze(
                 let snippet = std::str::from_utf8(&source_code[node.start_byte()..node.end_byte()])
                     .unwrap_or("<unreadable source>");
 
-                details_arr.push(NodeDetails { 
+                details_arr.push(Diagnostic { 
                     line, 
                     column, 
                     id: rule.id.clone(), 
@@ -60,17 +51,5 @@ pub fn analyze(
         }
     }
 
-    details_arr.sort_by_key(|x| (x.line, x.column));
-
-    for elem in details_arr {
-        println!("WARNING: {} ({})", elem.message, elem.severity.to_uppercase());
-        println!("Rule: {}", elem.id);
-        
-        if let Some(tip) = &elem.tip {
-            println!("Tip: {}", tip);
-        }
-        
-        println!("Location: Line {}, Column {}", elem.line, elem.column);
-        println!("Code: `{}`\n", elem.snippet);
-    }
+    details_arr
 }

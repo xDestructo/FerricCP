@@ -6,6 +6,7 @@ use clap::Parser as ClapParser;
 
 pub mod config;
 pub mod analyzer;
+pub mod diagnostics;
 
 /// FerricCP: A C++ static analyzer for Competitive Programming, built in Rust.
 #[derive(ClapParser, Debug)]
@@ -45,7 +46,7 @@ fn main() -> Result<()> {
 
     let root_node = tree.root_node();
     
-    analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &cpp);
+    diagnostics::print_cli(&mut analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &cpp));
 
     Ok(())
 }
