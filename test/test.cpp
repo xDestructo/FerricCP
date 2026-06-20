@@ -4,6 +4,7 @@
 
 int main() {
     std::vector<std::string> grid = {"hello", "world"};
+    std::vector<bool> yeah;
     
     for(auto row : grid) std::cout << row << std::endl; 
     
