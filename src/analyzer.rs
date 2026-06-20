@@ -28,6 +28,13 @@ pub fn analyze(
         while let Some(m) = matches.next() {
             
             for capture in m.captures {
+
+                let capture_name = query.capture_names()[capture.index as usize];
+                
+                if capture_name != "violation" {
+                    continue;
+                }
+
                 let node = capture.node;
                 
                 let start = node.start_position();
