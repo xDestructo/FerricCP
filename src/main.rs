@@ -8,6 +8,7 @@ use std::path::Path;
 pub mod config;
 pub mod analyzer;
 pub mod diagnostics;
+pub mod source_table;
 
 /// FerricCP: A C++ static analyzer for Competitive Programming, built in Rust.
 #[derive(ClapParser, Debug)]
@@ -63,7 +64,7 @@ fn main() -> Result<()> {
     let rules_arr = config::load_rules(&rules_path)?;
     log(&format!("Loaded {} rules from {}.", rules_arr.len(), args.rules));
 
-    
+
     let source_code = fs::read_to_string(&args.file)
         .with_context(|| format!("Failed to read {}", &args.file))?;
 
