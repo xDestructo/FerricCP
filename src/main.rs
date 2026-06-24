@@ -8,7 +8,8 @@ use std::path::Path;
 pub mod config;
 pub mod analyzer;
 pub mod diagnostics;
-pub mod source_table;
+pub mod symbol_table;
+pub mod semantics;
 
 /// FerricCP: A C++ static analyzer for Competitive Programming, built in Rust.
 #[derive(ClapParser, Debug)]
@@ -75,6 +76,8 @@ fn main() -> Result<()> {
         .context("Failed to parse source code")?;
 
     let root_node = tree.root_node();
+
+    let _symbol_table = semantics::build_symbol_table(root_node, source_code.as_bytes(), extension);
 
     let mut violations = analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &language);
     
