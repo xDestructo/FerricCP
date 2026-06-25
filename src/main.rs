@@ -77,7 +77,12 @@ fn main() -> Result<()> {
 
     let root_node = tree.root_node();
 
-    let _symbol_table = semantics::build_symbol_table(root_node, source_code.as_bytes(), extension);
+    let symbol_table = semantics::build_symbol_table(root_node, source_code.as_bytes(), extension);
+
+    // DEBUG PRINT
+    println!("\n===SYMBOL TABLE===");
+    println!("{:#?}", symbol_table);
+    println!("=================================\n");
 
     let mut violations = analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &language);
     

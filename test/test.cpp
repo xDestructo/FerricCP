@@ -1,7 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#define ll long long
+#define vi std::vector<int>
 
+using vll = std::vector<ll>;
 int main() {
     std::vector<std::string> grid = {"hello", "world"};
     std::vector<bool> yeah;
