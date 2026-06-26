@@ -22,12 +22,14 @@ pub struct Scope {
 #[derive(Debug)]
 pub struct SymbolTable {
     scopes: Vec<Scope>,
+    pub registry: HashMap<String, VariableState>,
 }
 
 impl SymbolTable {
     pub fn new() -> Self {
         Self {
             scopes: vec![Scope::default()], 
+            registry: HashMap::new(),
         }
     }
 
@@ -43,8 +45,11 @@ impl SymbolTable {
 
     pub fn declare_var(&mut self, name: String, state: VariableState) {
         if let Some(current_scope) = self.scopes.last_mut() {
-            current_scope.variables.insert(name, state);
+            current_scope.variables.insert(name.clone(), state.clone());
         }
+
+        let key = format!("{}_{}", name, state.line_declared);      
+        self.registry.insert(key, state);
     }
 
     pub fn declare_alias(&mut self, alias: String, actual_type: String) {
