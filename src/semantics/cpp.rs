@@ -1,4 +1,4 @@
-use crate::symbol_table::{SymbolTable};
+use crate::symbol_table::{SymbolTable, VariableState};
 use tree_sitter::{Node, TreeCursor};
 
 
@@ -39,7 +39,7 @@ fn traverse(cursor: &mut TreeCursor, source: &[u8], table: &mut SymbolTable) {
             }
             
             // variable declaration
-            "declaration" => {}
+            "declaration" => {extract_variables(node, source, table);}
             
             _ => {}
         }
@@ -57,5 +57,55 @@ fn traverse(cursor: &mut TreeCursor, source: &[u8], table: &mut SymbolTable) {
         if !cursor.goto_next_sibling() {
             break;
         }
+    }
+}
+
+fn extract_variables(node: Node, source: &[u8], table: &mut SymbolTable) {
+    let Some(type_node) = node.child_by_field_name("type") else { return; };
+    let Ok(declared_type) = type_node.utf8_text(source) else { return; };
+    let declared_type = declared_type.trim().to_string();
+
+    let mut cursor = node.walk();
+    for child in node.children(&mut cursor) {
+        let kind = child.kind();
+        
+        // uninitialized var eg: int x, y, *z;
+        if matches!(kind, "identifier" | "array_declarator" | "pointer_declarator" | "reference_declarator") {
+            if let Some(name) = extract_identifier_name(child, source) {
+                table.declare_var(name, VariableState {
+                    declared_type: declared_type.clone(),
+                    is_initialized: false, 
+                    is_mutated: false,
+                    read_count: 0,
+                    line_declared: node.start_position().row + 1, 
+                });
+            }
+        } 
+        // initialized var: int x = 5;
+        else if kind == "init_declarator" {
+            if let Some(decl_node) = child.child_by_field_name("declarator") {
+                if let Some(name) = extract_identifier_name(decl_node, source) {
+                    table.declare_var(name, VariableState {
+                        declared_type: declared_type.clone(),
+                        is_initialized: true, 
+                        is_mutated: false,
+                        read_count: 0,
+                        line_declared: node.start_position().row + 1,
+                    });
+                }
+            }
+        }
+    }
+}
+
+/// get var name from ast recursively
+fn extract_identifier_name(node: Node, source: &[u8]) -> Option<String> {
+    match node.kind() {
+        "identifier" => node.utf8_text(source).ok().map(|s| s.trim().to_string()),
+        "array_declarator" | "pointer_declarator" | "reference_declarator" => {
+            node.child_by_field_name("declarator")
+                .and_then(|n| extract_identifier_name(n, source))
+        },
+        _ => None
     }
 }
