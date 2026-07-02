@@ -1,5 +1,6 @@
 id: mutable-default-arg
 language: python
+rule_type: syntactic
 severity: error
 message: "Bug: Mutable default arguments share state across function calls."
 tip: "Use 'None' as the default and initialize the list inside the function."

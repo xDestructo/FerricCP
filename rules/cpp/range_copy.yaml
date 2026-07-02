@@ -1,5 +1,6 @@
 id: range_copy
 language: cpp
+rule_type: syntactic
 severity: warning
 message: "Range based loop is making expensive deep copies of elements."
 tip: "Use 'const auto&' or 'auto&' to pass by reference and skip the copy."

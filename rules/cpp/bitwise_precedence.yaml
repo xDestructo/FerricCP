@@ -1,5 +1,6 @@
 id: bitwise-precedence
 language: cpp
+rule_type: syntactic
 severity: error
 message: "Bug: Relational operators (==) evaluate before bitwise operators (&, |, ^)."
 tip: "Wrap the bitwise operation in parentheses: '(a & b) == 0'."

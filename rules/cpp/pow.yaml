@@ -1,5 +1,6 @@
 id: pow
 language: cpp
+rule_type: syntactic
 severity: error
 message: "Using 'pow()' for integers risks floating-point precision loss."
 tip: "Write a custom binary exponentiation function for exact integer math."

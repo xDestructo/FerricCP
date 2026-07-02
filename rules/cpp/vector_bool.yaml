@@ -1,5 +1,6 @@
 id: vector-bool-performance
 language: cpp
+rule_type: syntactic
 severity: warning
 message: "Performance: 'std::vector<bool>' is bit-packed and significantly slower due to proxy reference overhead."
 tip: "Replace with 'std::vector<char>' or 'std::bitset<N>'."
