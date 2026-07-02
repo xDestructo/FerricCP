@@ -7,6 +7,7 @@ use std::path::Path;
 pub struct RuleConfig {
     pub id: String,
     pub language: String,
+    pub rule_type: String,
     pub severity: String,
     pub message: String,
     pub tip: Option<String>, 

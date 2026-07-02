@@ -10,6 +10,8 @@ pub mod analyzer;
 pub mod diagnostics;
 pub mod symbol_table;
 pub mod semantics;
+pub mod dispatcher;
+pub mod rules;
 
 /// FerricCP: A C++ static analyzer for Competitive Programming, built in Rust.
 #[derive(ClapParser, Debug)]
@@ -84,7 +86,7 @@ fn main() -> Result<()> {
     println!("{:#?}", symbol_table);
     println!("=================================\n");
 
-    let mut violations = analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &language);
+    let mut violations = analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &language, &symbol_table);
     
     diagnostics::output(&mut violations, args.format);
 
