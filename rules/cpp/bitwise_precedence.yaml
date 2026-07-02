@@ -1,4 +1,4 @@
-id: bitwise-precedence
+id: bitwise_precedence
 language: cpp
 rule_type: syntactic
 severity: error

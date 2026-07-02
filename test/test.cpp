@@ -8,6 +8,9 @@ using vll = std::vector<ll>;
 int main() {
     std::vector<std::string> grid = {"hello", "world"};
     std::vector<bool> yeah;
+
+    int n;
+    vector<int> arr(n);
     
     for(auto row : grid) std::cout << row << std::endl; 
     

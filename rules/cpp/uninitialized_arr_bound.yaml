@@ -1,0 +1,15 @@
+id: uninitialized_arr_bound
+language: cpp
+rule_type: semantic
+severity: error
+message: "Variable '{var}' used as array bound but is completely uninitialized."
+tip: "Initialize '{var}' (e.g., cin >> {var}) before using it to size a container."
+query: >
+    (declaration
+    type: (template_type name: (type_identifier) @type_name (#eq? @type_name "vector"))
+    declarator: (function_declarator
+    parameters: (parameter_list
+        (parameter_declaration) @bound_var
+    )
+    )
+    ) @violation

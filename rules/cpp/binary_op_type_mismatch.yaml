@@ -1,0 +1,11 @@
+id: binary_op_type_mismatch
+language: cpp
+rule_type: semantic
+message: "Implicit type conversion in binary operation. Risk of overflow or precision loss."
+severity: warning
+tip: "Cast variables to the same type (e.g., both 'long long') before operating on them."
+query: >
+  (binary_expression
+    left: (identifier)
+    right: (identifier)
+  ) @violation

@@ -1,10 +1,11 @@
 use std::collections::HashMap;
 use tree_sitter::Node;
+use crate::config::RuleConfig;
 use crate::symbol_table::SymbolTable;
 use crate::diagnostics::Diagnostic;
 
 pub trait SemanticRule {
-    fn check(&self, node: Node, source: &[u8], table: &SymbolTable) -> Option<Diagnostic>;
+    fn check(&self, node: Node, source: &[u8], table: &SymbolTable, rule: &RuleConfig) -> Option<Diagnostic>;
 }
 
 pub struct RuleDispatcher {
@@ -27,10 +28,11 @@ impl RuleDispatcher {
         yaml_id: &str, 
         node: Node, 
         source: &[u8], 
-        table: &SymbolTable
+        table: &SymbolTable,
+        rule: &RuleConfig
     ) -> Option<Diagnostic> {
-        if let Some(rule) = self.checkers.get(yaml_id) {
-            rule.check(node, source, table)
+        if let Some(checker) = self.checkers.get(yaml_id) {
+            checker.check(node, source, table, rule)
         } else {
             None
         }

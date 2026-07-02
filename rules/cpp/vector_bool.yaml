@@ -1,8 +1,8 @@
-id: vector-bool-performance
+id: vector_bool
 language: cpp
 rule_type: syntactic
 severity: warning
-message: "Performance: 'std::vector<bool>' is bit-packed and significantly slower due to proxy reference overhead."
+message: "'std::vector<bool>' is bit-packed and significantly slower due to proxy reference overhead."
 tip: "Replace with 'std::vector<char>' or 'std::bitset<N>'."
 query: |
   (template_type

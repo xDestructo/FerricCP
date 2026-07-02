@@ -49,7 +49,9 @@ pub fn analyze(
                 let node = capture.node;
 
                 if rule.rule_type == "semantic" {
-                    if let Some(diagnostic) = dispatcher.run_semantic_check(&rule.id, node, source_code, symbol_table) {
+                    if let Some(diagnostic) = 
+                            dispatcher.run_semantic_check(&rule.id, 
+                                node, source_code, symbol_table, rule) {
                         details_arr.push(diagnostic);
                     }
                 } 
