@@ -64,7 +64,7 @@ fn main() -> Result<()> {
 
 
     let rules_path = format!("{}/{}", args.rules, lang_dir);
-    let rules_arr = config::load_rules(&rules_path)?;
+    let rules_arr = config::load_rules(&rules_path, language)?;
     log(&format!("Loaded {} rules from {}.", rules_arr.len(), args.rules));
 
 
@@ -86,7 +86,7 @@ fn main() -> Result<()> {
     println!("{:#?}", symbol_table);
     println!("=================================\n");
 
-    let mut violations = analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &language, &symbol_table);
+    let mut violations = analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &symbol_table);
     
     diagnostics::output(&mut violations, args.format);
 
