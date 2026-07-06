@@ -399,27 +399,39 @@ This separation allows inexpensive syntactic rules to remain fully data driven w
 
 ### Overall Pipeline
 
-```mermaid
-flowchart TD
-    A[Source Code] --> B[Tree-sitter Parser]
-    B --> C[Concrete Syntax Tree]
-
-    C --> D["Pass 1: State Collection"]
-    C --> E["Compile YAML Queries<br/>(Boot Time)"]
-
-    D --> F["Pass 2: Query Execution"]
-    E --> F
-
-    F --> G[Matching AST Nodes]
-
-    G --> H[Syntactic Rule]
-    G --> I[Semantic Rule]
-
-    H --> J[Immediate Diagnostic]
-
-    I --> K[RuleDispatcher]
-    K --> L[Symbol Table Lookup]
-    L --> M[Diagnostic Output]
+```text
+           Source Code
+                 │
+                 ▼
+        Tree-sitter Parser
+                 │
+                 ▼
+        Concrete Syntax Tree
+                 │
+        ┌────────┴────────┐
+        │                 │
+        ▼                 ▼
+ Pass 1: State      Compile YAML Queries
+ Collection          (Boot Time)
+        │                 │
+        └────────┬────────┘
+                 ▼
+      Pass 2: Query Execution
+                 │
+         Matching AST Nodes
+                 │
+        ┌────────┴─────────┐
+        ▼                  ▼
+ Syntactic Rule      Semantic Rule
+      │                    │
+      ▼                    ▼
+ Immediate         RuleDispatcher
+ Diagnostic               │
+                          ▼
+                 Symbol Table Lookup
+                           │
+                           ▼
+                     Diagnostic Output
 ```
 
 ## 6. The Presentation Layer
@@ -467,30 +479,31 @@ Because every rule emits the same standardized object, the rest of the applicati
 
 ### Diagnostic Flow
 
-```mermaid
-flowchart TD
-    A[AST Match Found]
-    B[Syntactic Rule / RuleDispatcher]
-    C[Semantic Validation]
-    D[Construct Diagnostic DTO]
-    E["Push into Vec&lt;Diagnostic&gt;"]
-    F[Analysis Complete]
-    G[Presentation Layer]
-
-    H[Terminal]
-    I[JSON]
-    J[LSP]
-
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-
-    G --> H
-    G --> I
-    G --> J
+```text
+              AST Match Found
+                     │
+                     ▼
+      Syntactic Rule / RuleDispatcher
+                     │
+                     ▼
+        Semantic Validation Executes
+                     │
+                     ▼
+        Construct Diagnostic DTO
+                     │
+                     ▼
+      Push into Vec<Diagnostic>
+                     │
+                     ▼
+         Analysis Phase Complete
+                     │
+                     ▼
+      Presentation Layer Consumes DTOs
+                     │
+          ┌──────────┼──────────┐
+          ▼          ▼          ▼
+     Terminal      JSON        LSP
+      Output      Export     Integration
 ```
 
 ---
@@ -552,30 +565,22 @@ This separation of concerns keeps the compiler core lightweight, testable, and c
 
 ### Overall Architecture
 
-```mermaid
-flowchart TD
-    A[Source Code]
-    B[Hybrid Analysis Engine]
-    C["Vec&lt;Diagnostic&gt;<br/>(DTO Layer)"]
-
-    D[CLI Output]
-    E[JSON API]
-    F[LSP Server]
-
-    G[Terminal]
-    H[CI/CD]
-    I[IDE Editor]
-
-    A --> B
-    B --> C
-
-    C --> D
-    C --> E
-    C --> F
-
-    D --> G
-    E --> H
-    F --> I
+```text
+          Source Code
+                │
+                ▼
+      Hybrid Analysis Engine
+                │
+                ▼
+     Vec<Diagnostic> (DTO Layer)
+                │
+      ┌─────────┼─────────┐
+      ▼         ▼         ▼
+  CLI Output  JSON API   LSP Server
+      │         │         │
+      ▼         ▼         ▼
+   Terminal   CI/CD     IDE Editor
+```
 
 By treating diagnostics as standardized data rather than formatted text, FerricCP cleanly separates analysis from presentation. This makes the core engine reusable across CLIs, IDEs, APIs, and any future integrations without requiring changes to the semantic analysis pipeline.
 
@@ -594,46 +599,35 @@ By combining:
 FerricCP is able to detect many of the most common competitive programming pitfalls in milliseconds often preventing Wrong Answers before code submission.
 
 ## The Entire Architecture
-```mermaid
-flowchart TD
-    A[Source Code]
-    B[Tree-sitter Parser]
-    C[Concrete Syntax Tree]
-
-    D["Pass 1:<br/>Symbol Collection"]
-    E["Query Compilation"]
-
-    F["Query Execution"]
-
-    G[Syntactic Rules]
-    H[Semantic Rules]
-
-    I[Symbol Table]
-
-    J[Diagnostic DTO]
-
-    K[CLI]
-    L[JSON]
-    M[LSP]
-
-    A --> B
-    B --> C
-
-    C --> D
-    C --> E
-
-    D --> F
-    E --> F
-
-    F --> G
-    F --> H
-
-    H --> I
-    I --> J
-
-    G --> J
-
-    J --> K
-    J --> L
-    J --> M
+```text
+                    Source Code
+                         │
+                         ▼
+                 Tree-sitter Parser
+                         │
+                         ▼
+                Concrete Syntax Tree
+                         │
+          ┌──────────────┴──────────────┐
+          ▼                             ▼
+  Pass 1: Symbol Collection      Query Compilation
+          │                             │
+          └──────────────┬──────────────┘
+                         ▼
+                 Query Execution
+                         │
+                Matching AST Nodes
+                         │
+          ┌──────────────┴──────────────┐
+          ▼                             ▼
+   Syntactic Rules             Semantic Rules
+                                       │
+                                       ▼
+                                Symbol Table
+                                       │
+                                       ▼
+                               Diagnostic DTO
+                                       │
+                                       ▼
+                               CLI / JSON / LSP
 ```
