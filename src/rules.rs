@@ -1,7 +1,7 @@
 use tree_sitter::Node;
 use crate::dispatcher::SemanticRule;
 use crate::symbol_table::SymbolTable;
-use crate::diagnostics::Diagnostic;
+use crate::diagnostics::{Diagnostic, build_diagnostic};
 use crate::config::RuleConfig;
 
 // id uninitialized_arr_bound
@@ -36,15 +36,7 @@ impl SemanticRule for ArrayBoundRule {
                 
                 if var_name == target_var && state.line_declared < current_line {
                     if !state.is_initialized {
-                        return Some(Diagnostic {
-                            id: rule.id.clone(),
-                            message: rule.message.replace("{var}", &var_name),
-                            severity: rule.severity.clone(),
-                            line: current_line,
-                            column: node.start_position().column + 1,
-                            tip: rule.tip.as_ref().map(|t| t.replace("{var}", &var_name)),
-                            snippet: node.utf8_text(source).unwrap_or("<unreadable>").to_string(),
-                        });
+                        return Some(build_diagnostic(node, source, rule, Some(&var_name)));
                     }
                 }
             }

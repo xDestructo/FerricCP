@@ -1,8 +1,7 @@
 use crate::symbol_table::SymbolTable;
 use crate::config::RuleConfig;
-use crate::diagnostics::Diagnostic;
+use crate::diagnostics::{Diagnostic, build_diagnostic};
 use tree_sitter::{Node, QueryCursor, StreamingIterator};
-
 use crate::dispatcher::RuleDispatcher;
 use crate::rules::load_semantic_rules;
 
@@ -47,19 +46,7 @@ pub fn analyze(
                     }
                 } 
                 else if rule.rule_type == "syntactic" {
-                    let start = node.start_position();
-                    let snippet = std::str::from_utf8(&source_code[node.start_byte()..node.end_byte()])
-                        .unwrap_or("<unreadable source>");
-
-                    details_arr.push(Diagnostic { 
-                        line: start.row + 1, 
-                        column: start.column + 1, 
-                        id: rule.id.clone(), 
-                        message: rule.message.clone(), 
-                        severity: rule.severity.clone(), 
-                        tip: rule.tip.clone(), 
-                        snippet: snippet.to_string()
-                    });
+                    details_arr.push(build_diagnostic(node, source_code, rule, None));
                 }
             }
         }

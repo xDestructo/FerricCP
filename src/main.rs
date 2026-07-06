@@ -43,8 +43,11 @@ enum Commands {
         #[arg(short, long)]
         quiet: bool,
     },
-    /// Boot the Language Server Protocol (LSP) for VS Code integration
-    Lsp,
+    /// boot LSP for VS Code integration
+    Lsp {
+        #[arg(short, long, default_value = "rules")]
+        rules: String,
+    }
 }
 
 #[tokio::main]
@@ -95,11 +98,15 @@ async fn main() -> Result<()> {
             let mut violations = analyzer::analyze(root_node, source_code.as_bytes(), &rules_arr, &symbol_table);
             diagnostics::output(&mut violations, format);
         }
-        Commands::Lsp => {
+        Commands::Lsp { rules } => {
             let stdin = tokio::io::stdin();
             let stdout = tokio::io::stdout();
 
-            let (service, socket) = LspService::new(|client| FerricLsp { client });
+            let (service, socket) = LspService::new(|client| FerricLsp { 
+                client,
+                rules_dir: rules 
+            });
+            
             Server::new(stdin, stdout, socket).serve(service).await;
         }
     }
