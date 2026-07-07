@@ -4,6 +4,7 @@ rule_type: syntactic
 severity: warning
 message: "'std::vector<bool>' is bit-packed and significantly slower due to proxy reference overhead."
 tip: "Replace with 'std::vector<char>' or 'std::bitset<N>'."
+replacement: "vector<char>"
 query: |
   (template_type
     name: (type_identifier) @name (#eq? @name "vector")

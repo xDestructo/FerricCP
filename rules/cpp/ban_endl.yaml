@@ -4,6 +4,7 @@ rule_type: syntactic
 severity: warning
 message: "endl forces an expensive buffer flush."
 tip: "Replace with '\\n' to prevent TLE on large outputs."
+replacement: "'\\n'"
 query: |
   ((identifier) @violation
    (#eq? @violation "endl"))

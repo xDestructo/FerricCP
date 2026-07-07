@@ -4,6 +4,7 @@ rule_type: syntactic
 severity: error
 message: "Bug: Mutable default arguments share state across function calls."
 tip: "Use 'None' as the default and initialize the list inside the function."
+replacement: "None"
 query: |
   (parameters
     (default_parameter
